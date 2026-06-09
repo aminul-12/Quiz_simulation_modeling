@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulation & Modelling — 100 MCQ Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05080f;
+  --surface: #0c1220;
+  --card: #111b2e;
+  --border: #1c2d47;
+  --cyan: #00e5ff;
+  --violet: #8b5cf6;
+  --green: #22d3a0;
+  --amber: #fbbf24;
+  --red: #f43f5e;
+  --text: #e2e8f0;
+  --muted: #4a6080;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Space Grotesk', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+}
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 10%, rgba(0,229,255,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(139,92,246,0.05) 0%, transparent 60%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ── SCREEN MANAGER ── */
+.screen { display:none; position:relative; z-index:1; }
+.screen.active { display:block; }
+
+/* ── HERO / START ── */
+#screen-start {
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px 20px;
+}
+.hero {
+  max-width:680px;
+  width:100%;
+  text-align:center;
+}
+.hero-eyebrow {
+  font-family:var(--mono);
+  font-size:0.72rem;
+  color:var(--cyan);
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-bottom:20px;
+  opacity:0.8;
+}
+.hero h1 {
+  font-size:clamp(2rem,6vw,3.4rem);
+  font-weight:700;
+  line-height:1.08;
+  letter-spacing:-1.5px;
+  margin-bottom:16px;
+}
+.hero h1 em {
+  font-style:normal;
+  background: linear-gradient(120deg, var(--cyan), var(--violet));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.hero-sub {
+  font-size:0.95rem;
+  color:var(--muted);
+  line-height:1.7;
+  margin-bottom:40px;
+  font-family:var(--mono);
+}
+.topics-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+  gap:10px;
+  margin-bottom:40px;
+}
+.topic-chip {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px 12px;
+  font-family:var(--mono);
+  font-size:0.68rem;
+  color:var(--muted);
+  text-align:left;
+  line-height:1.5;
+}
+.topic-chip span {
+  display:block;
+  font-size:0.75rem;
+  font-weight:700;
+  margin-bottom:3px;
+}
+.topic-chip.t1 span { color:var(--cyan); }
+.topic-chip.t2 span { color:var(--violet); }
+.topic-chip.t3 span { color:var(--green); }
+.topic-chip.t4 span { color:var(--amber); }
+.topic-chip.t5 span { color:var(--red); }
+.topic-chip.t6 span { color:#f472b6; }
+.topic-chip.t7 span { color:#34d399; }
+.topic-chip.t8 span { color:#a78bfa; }
+.topic-chip.t9 span { color:#fb923c; }
+
+.btn-start {
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  color: var(--bg);
+  border:none;
+  border-radius:10px;
+  padding:16px 48px;
+  font-family:var(--sans);
+  font-size:1rem;
+  font-weight:700;
+  cursor:pointer;
+  letter-spacing:-0.3px;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 0 30px rgba(0,229,255,0.2);
+}
+.btn-start:hover { transform:translateY(-2px); box-shadow:0 0 40px rgba(0,229,255,0.35); }
+
+.stat-row {
+  display:flex;
+  justify-content:center;
+  gap:32px;
+  margin-bottom:36px;
+}
+.stat { text-align:center; }
+.stat-num { font-size:2rem; font-weight:700; color:var(--cyan); font-family:var(--mono); }
+.stat-lbl { font-size:0.68rem; color:var(--muted); font-family:var(--mono); text-transform:uppercase; letter-spacing:1px; }
+
+/* ── QUIZ SCREEN ── */
+#screen-quiz { min-height:100vh; padding:0; }
+.quiz-layout {
+  max-width:820px;
+  margin:0 auto;
+  padding:30px 20px 100px;
+}
+
+/* Progress bar */
+.progress-bar-wrap {
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(5,8,15,0.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:12px 20px;
+}
+.progress-meta {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+  max-width:820px;
+  margin-left:auto;
+  margin-right:auto;
+}
+.progress-label { font-family:var(--mono); font-size:0.72rem; color:var(--muted); }
+.progress-frac { font-family:var(--mono); font-size:0.85rem; font-weight:700; color:var(--cyan); }
+.progress-track {
+  max-width:820px;
+  margin:0 auto;
+  height:4px;
+  background:var(--border);
+  border-radius:2px;
+  overflow:hidden;
+}
+.progress-fill {
+  height:100%;
+  background:linear-gradient(90deg, var(--cyan), var(--violet));
+  border-radius:2px;
+  transition:width 0.4s ease;
+}
+
+/* Question card */
+.q-card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:30px;
+  margin-top:28px;
+  transition:border-color 0.3s;
+}
+.q-card.answered-correct { border-color: rgba(34,211,160,0.5); }
+.q-card.answered-wrong   { border-color: rgba(244,63,94,0.4); }
+
+.q-header {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:20px;
+}
+.q-num {
+  width:36px; height:36px;
+  border-radius:8px;
+  background:rgba(0,229,255,0.1);
+  border:1.5px solid rgba(0,229,255,0.3);
+  color:var(--cyan);
+  font-family:var(--mono);
+  font-size:0.8rem;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.q-topic-badge {
+  font-family:var(--mono);
+  font-size:0.62rem;
+  padding:3px 9px;
+  border-radius:20px;
+  border:1px solid;
+}
+.q-text {
+  font-size:1rem;
+  font-weight:500;
+  line-height:1.65;
+  margin-bottom:22px;
+  color:var(--text);
+}
+
+/* Options */
+.options { display:flex; flex-direction:column; gap:10px; }
+.opt-btn {
+  background: rgba(255,255,255,0.02);
+  border: 1.5px solid var(--border);
+  border-radius:10px;
+  padding:13px 16px;
+  color:var(--text);
+  font-family:var(--sans);
+  font-size:0.88rem;
+  text-align:left;
+  cursor:pointer;
+  transition: all 0.15s;
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  line-height:1.5;
+}
+.opt-btn:hover:not(:disabled) {
+  background:rgba(0,229,255,0.06);
+  border-color:rgba(0,229,255,0.4);
+}
+.opt-key {
+  width:24px; height:24px;
+  border-radius:5px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  font-family:var(--mono);
+  font-size:0.7rem;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  color:var(--muted);
+}
+.opt-btn.correct {
+  background:rgba(34,211,160,0.1);
+  border-color:var(--green);
+  color:var(--green);
+}
+.opt-btn.correct .opt-key { background:rgba(34,211,160,0.2); border-color:var(--green); color:var(--green); }
+.opt-btn.wrong {
+  background:rgba(244,63,94,0.08);
+  border-color:var(--red);
+  color:var(--red);
+  opacity:0.8;
+}
+.opt-btn.wrong .opt-key { background:rgba(244,63,94,0.15); border-color:var(--red); color:var(--red); }
+.opt-btn:disabled { cursor:default; }
+
+/* Explanation */
+.explanation {
+  margin-top:16px;
+  padding:14px 16px;
+  border-radius:10px;
+  font-family:var(--mono);
+  font-size:0.75rem;
+  line-height:1.6;
+  display:none;
+}
+.explanation.correct { background:rgba(34,211,160,0.07); border:1px solid rgba(34,211,160,0.25); color:var(--green); }
+.explanation.wrong   { background:rgba(244,63,94,0.06); border:1px solid rgba(244,63,94,0.2); color:#fb7185; }
+.explanation.show { display:block; }
+
+/* Floating nav */
+.q-nav {
+  position:fixed;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:rgba(12,18,32,0.92);
+  backdrop-filter:blur(16px);
+  border:1px solid var(--border);
+  border-radius:50px;
+  padding:10px 20px;
+  z-index:200;
+}
+.nav-btn {
+  background:var(--card);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:8px 18px;
+  border-radius:30px;
+  font-family:var(--sans);
+  font-size:0.8rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.15s;
+}
+.nav-btn:hover { border-color:var(--cyan); color:var(--cyan); }
+.nav-btn.primary {
+  background:linear-gradient(135deg,var(--cyan),var(--violet));
+  color:var(--bg);
+  border:none;
+}
+.nav-btn:disabled { opacity:0.3; cursor:not-allowed; }
+.nav-score {
+  font-family:var(--mono);
+  font-size:0.8rem;
+  color:var(--cyan);
+  min-width:60px;
+  text-align:center;
+}
+
+/* ── RESULTS SCREEN ── */
+#screen-results {
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px 20px;
+}
+.results-wrap { max-width:700px; width:100%; }
+.results-title {
+  font-size:clamp(1.8rem,5vw,3rem);
+  font-weight:700;
+  letter-spacing:-1px;
+  margin-bottom:8px;
+  text-align:center;
+}
+.results-sub {
+  font-family:var(--mono);
+  font-size:0.78rem;
+  color:var(--muted);
+  text-align:center;
+  margin-bottom:40px;
+}
+.score-ring-wrap {
+  display:flex;
+  justify-content:center;
+  margin-bottom:40px;
+}
+.score-ring {
+  width:180px; height:180px;
+  border-radius:50%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border:4px solid var(--border);
+  position:relative;
+}
+.score-big { font-size:2.6rem; font-weight:700; font-family:var(--mono); }
+.score-denom { font-family:var(--mono); font-size:0.78rem; color:var(--muted); }
+.results-stats {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-bottom:28px;
+}
+.res-stat {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px;
+  text-align:center;
+}
+.res-stat-num { font-size:1.8rem; font-weight:700; font-family:var(--mono); margin-bottom:4px; }
+.res-stat-lbl { font-size:0.68rem; color:var(--muted); font-family:var(--mono); text-transform:uppercase; letter-spacing:1px; }
+
+.grade-banner {
+  border-radius:14px;
+  padding:20px 24px;
+  text-align:center;
+  margin-bottom:28px;
+}
+.grade-letter { font-size:3rem; font-weight:700; font-family:var(--mono); }
+.grade-msg { font-size:0.9rem; color:var(--muted); margin-top:6px; }
+
+.results-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.btn-retry {
+  background:var(--card);
+  border:1.5px solid var(--border);
+  color:var(--text);
+  padding:12px 28px;
+  border-radius:10px;
+  font-family:var(--sans);
+  font-size:0.9rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.15s;
+}
+.btn-retry:hover { border-color:var(--cyan); color:var(--cyan); }
+.btn-review {
+  background:linear-gradient(135deg,var(--cyan),var(--violet));
+  color:var(--bg);
+  border:none;
+  padding:12px 28px;
+  border-radius:10px;
+  font-family:var(--sans);
+  font-size:0.9rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:transform 0.15s;
+}
+.btn-review:hover { transform:translateY(-2px); }
+
+/* Topic colors */
+.tc-uniform  { color:#00e5ff; border-color:rgba(0,229,255,0.35); }
+.tc-expo     { color:#8b5cf6; border-color:rgba(139,92,246,0.35); }
+.tc-gamma    { color:#22d3a0; border-color:rgba(34,211,160,0.35); }
+.tc-erlang   { color:#fbbf24; border-color:rgba(251,191,36,0.35); }
+.tc-normal   { color:#f43f5e; border-color:rgba(244,63,94,0.35); }
+.tc-weibull  { color:#f472b6; border-color:rgba(244,114,182,0.35); }
+.tc-tri      { color:#34d399; border-color:rgba(52,211,153,0.35); }
+.tc-lognorm  { color:#a78bfa; border-color:rgba(167,139,250,0.35); }
+.tc-beta     { color:#fb923c; border-color:rgba(251,146,60,0.35); }
+
+@media(max-width:500px) {
+  .results-stats { grid-template-columns:1fr 1fr; }
+  .topics-grid { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════ START SCREEN ════════════ -->
+<div class="screen active" id="screen-start">
+  <div class="hero">
+    <div class="hero-eyebrow">Simulation &amp; Modelling · Lecture 9-10</div>
+    <h1>100 MCQ<br><em>Practice Quiz</em></h1>
+    <p class="hero-sub">// Continuous Distributions — Test your knowledge</p>
+
+    <div class="stat-row">
+      <div class="stat"><div class="stat-num">100</div><div class="stat-lbl">Questions</div></div>
+      <div class="stat"><div class="stat-num">9</div><div class="stat-lbl">Topics</div></div>
+      <div class="stat"><div class="stat-num">∞</div><div class="stat-lbl">Attempts</div></div>
+    </div>
+
+    <div class="topics-grid">
+      <div class="topic-chip t1"><span>Uniform</span>pdf, cdf, mean, variance</div>
+      <div class="topic-chip t2"><span>Exponential</span>λ, memoryless, CDF</div>
+      <div class="topic-chip t3"><span>Gamma</span>Γ function, parameters</div>
+      <div class="topic-chip t4"><span>Erlang</span>k-phases, queueing</div>
+      <div class="topic-chip t5"><span>Normal</span>Z-score, Φ table</div>
+      <div class="topic-chip t6"><span>Weibull</span>shape, reliability</div>
+      <div class="topic-chip t7"><span>Triangular</span>mode, median</div>
+      <div class="topic-chip t8"><span>Lognormal</span>parameters, mean</div>
+      <div class="topic-chip t9"><span>Beta</span>range, flexibility</div>
+    </div>
+
+    <button class="btn-start" onclick="startQuiz()">Start Quiz →</button>
+  </div>
+</div>
+
+<!-- ════════════ QUIZ SCREEN ════════════ -->
+<div class="screen" id="screen-quiz">
+  <div class="progress-bar-wrap">
+    <div class="progress-meta">
+      <span class="progress-label" id="prog-label">Question 1 of 100</span>
+      <span class="progress-frac" id="prog-frac">0 / 100</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="quiz-layout" id="quiz-container"></div>
+
+  <div class="q-nav">
+    <button class="nav-btn" id="btn-prev" onclick="navigate(-1)">← Prev</button>
+    <span class="nav-score" id="nav-score">0 pts</span>
+    <button class="nav-btn" id="btn-next" onclick="navigate(1)">Next →</button>
+    <button class="nav-btn primary" id="btn-finish" onclick="showResults()" style="display:none">Finish 🎯</button>
+  </div>
+</div>
+
+<!-- ════════════ RESULTS SCREEN ════════════ -->
+<div class="screen" id="screen-results">
+  <div class="results-wrap">
+    <div class="results-title">Quiz Complete!</div>
+    <div class="results-sub" id="res-sub">// Results for Simulation &amp; Modelling MCQ</div>
+
+    <div class="score-ring-wrap">
+      <div class="score-ring" id="score-ring">
+        <div class="score-big" id="score-big">0</div>
+        <div class="score-denom" id="score-denom">/ 100</div>
+      </div>
+    </div>
+
+    <div class="results-stats">
+      <div class="res-stat">
+        <div class="res-stat-num" style="color:var(--green)" id="res-correct">0</div>
+        <div class="res-stat-lbl">Correct</div>
+      </div>
+      <div class="res-stat">
+        <div class="res-stat-num" style="color:var(--red)" id="res-wrong">0</div>
+        <div class="res-stat-lbl">Wrong</div>
+      </div>
+      <div class="res-stat">
+        <div class="res-stat-num" style="color:var(--muted)" id="res-skip">0</div>
+        <div class="res-stat-lbl">Skipped</div>
+      </div>
+    </div>
+
+    <div class="grade-banner" id="grade-banner">
+      <div class="grade-letter" id="grade-letter">A</div>
+      <div class="grade-msg" id="grade-msg">Excellent work!</div>
+    </div>
+
+    <div class="results-btns">
+      <button class="btn-retry" onclick="retryQuiz()">↺ Retry Quiz</button>
+      <button class="btn-review" onclick="reviewQuiz()">Review Answers</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  // ── UNIFORM DISTRIBUTION (Q1–Q15) ──
+  { topic:"Uniform", tc:"tc-uniform",
+    q:"What is the PDF of a Uniform distribution on interval (a, b)?",
+    opts:["f(x) = 1/(b−a) for a ≤ x ≤ b","f(x) = λe^(−λx) for x ≥ 0","f(x) = (b−a)²/12","f(x) = (a+b)/2"],
+    ans:0, exp:"The Uniform PDF is 1/(b−a) over [a,b] and 0 elsewhere — equal probability density across the interval." },
+
+  { topic:"Uniform", tc:"tc-uniform",
+    q:"The mean of a Uniform distribution Unif(a, b) is:",
+    opts:["(a+b)/2","(b−a)²/12","1/λ","(a+b+c)/3"],
+    ans:0, exp:"E(X) = (a+b)/2 — the midpoint of the interval, by symmetry." },
+
+  { topic:"Uniform", tc:"tc-uniform",
+    q:"The variance of Unif(a, b) is:",
+    opts:["(b−a)²/12","(a+b)/2","(b−a)/2","(b−a)²/6"],
+    ans:0, exp:"V(X) = (b−a)²/12. The variance grows with the square of the interval width." },
+
+  { topic:"Uniform", tc:"tc-uniform",
+    q:"The CDF of Unif(a, b) for a ≤ x ≤ b is:",
+    opts:["(x−a)/(b−a)","(b−a)/x","x/(b−a)","1 − e^(−λx)"],
+    ans:0, exp:"F(x) = (x−a)/(b−a), which linearly increases from 0 to 1 as x goes from a to b." },
+
+  { topic:"Uniform", tc:"tc-uniform",
+    q:"If X ~ Unif(50, 150), what is P{80 < X < 120}?",
+    opts:["0.4","0.5","0.3","0.6"],
+    ans:0, exp:"P = (120−80)/(150−50) = 40/100 = 0.4." },
+
+  { topic:"Uniform", tc:"tc-uniform",
+    q:"For the Uniform distribution, what role does it play in simulation?",
+    opts:["Generates random numbers between 0 and 1 for random events","Models component failure rates","Describes normal phenomena","Models queueing arrivals"],
+    ans:0, exp:"Uniform(0,1) random numbers are the foundation for generating all other distributions in simulation." },
+
+  { topic:"Uniform", tc:"tc-uniform",
+    q:"P(x₁ < X < x₂) for Unif(a,b) is proportional to:",
+    opts:["Length of interval (x₂−x₁)","Value of x₁","Value of x₂","The midpoint (x₁+x₂)/2"],
+    ans:0, exp:"For a uniform distribution, probability is proportional to interval length: (x₂−x₁)/(b−a)." },
+
+  { topic:"Uniform", tc:"tc-uniform",
+    q:"If a bus arrives every 20 min and a passenger arrives uniformly in (0,30), what is P(wait > 5 min)?",
+    opts:["5/6","1/6","1/2","2/3"],
+    ans:0, exp:"Waiting >5 min means arriving in (0,15) or (20,30) — total 25 out of 30 minutes = 5/6." },
+
+  { topic:"Uniform", tc:"tc-uniform",
+    q:"For Unif(α, β), what is the height of the PDF rectangle?",
+    opts:["1/(β−α)","(β−α)","(α+β)/2","(β−α)²/12"],
+    ans:0, exp:"The PDF is constant at 1/(β−α) for the entire interval [α, β]." },
+
+  { topic:"Uniform", tc:"tc-uniform",
+    q:"X ~ Unif(1, 6). What is the mean?",
+    opts:["3.5","2.5","4","3"],
+    ans:0, exp:"E(X) = (1+6)/2 = 7/2 = 3.5" },
+
+  { topic:"Uniform", tc:"tc-uniform",
+    q:"X ~ Unif(1, 6). What is the variance?",
+    opts:["25/12","5/2","5","1/12"],
+    ans:0, exp:"V(X) = (6−1)²/12 = 25/12 ≈ 2.083" },
+
+  { topic:"Uniform", tc:"tc-uniform",
+    q:"The CDF F(x) = 0 when:",
+    opts:["x < a","x > b","x = (a+b)/2","a ≤ x ≤ b"],
+    ans:0, exp:"F(x) = 0 for x < a (below the lower bound), 1 for x ≥ b." },
+
+  { topic:"Uniform", tc:"tc-uniform",
+    q:"The shape of the PDF graph for Unif(α, β) is:",
+    opts:["A rectangle (flat line)","A bell curve","An exponentially decaying curve","A triangle"],
+    ans:0, exp:"The PDF is a horizontal line (rectangle) at height 1/(β−α) between α and β." },
+
+  { topic:"Uniform", tc:"tc-uniform",
+    q:"X ~ Unif(0, 30). What is the standard deviation?",
+    opts:["√(75) ≈ 8.66","15","30","7.5"],
+    ans:0, exp:"V(X) = (30−0)²/12 = 75, so SD = √75 ≈ 8.66." },
+
+  { topic:"Uniform", tc:"tc-uniform",
+    q:"The CDF of Unif(a,b) is a:",
+    opts:["Straight line from 0 to 1","Horizontal line","Exponential curve","Step function"],
+    ans:0, exp:"The CDF increases linearly from F(a)=0 to F(b)=1 — a straight diagonal line." },
+
+  // ── EXPONENTIAL DISTRIBUTION (Q16–Q33) ──
+  { topic:"Exponential", tc:"tc-expo",
+    q:"The PDF of an Exponential distribution with rate λ is:",
+    opts:["f(x) = λe^(−λx) for x ≥ 0","f(x) = 1/(b−a)","f(x) = e^(−x)","f(x) = λ²e^(−λx)"],
+    ans:0, exp:"The Exponential PDF is λe^(−λx) for x ≥ 0, starting at λ and decaying exponentially." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"The mean of Exp(λ) is:",
+    opts:["1/λ","λ","1/λ²","2/λ"],
+    ans:0, exp:"E(X) = 1/λ. A higher rate λ means shorter average time between events." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"The variance of Exp(λ) is:",
+    opts:["1/λ²","1/λ","λ²","2/λ²"],
+    ans:0, exp:"V(X) = 1/λ². Note that E(X) = SD(X) = 1/λ for the exponential distribution." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"The CDF of the Exponential distribution for x ≥ 0 is:",
+    opts:["F(x) = 1 − e^(−λx)","F(x) = e^(−λx)","F(x) = λe^(−λx)","F(x) = 1 − λe^(−λx)"],
+    ans:0, exp:"F(x) = 1 − e^(−λx) for x ≥ 0, obtained by integrating the PDF." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"Which property is unique to the Exponential distribution?",
+    opts:["Memoryless property","Symmetry about the mean","Finite support [a,b]","Mean equals median"],
+    ans:0, exp:"The memoryless property: P(X > s+t | X > s) = P(X > t). A used component is as good as new." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"For any Exponential random variable, P(X > mean) equals:",
+    opts:["e^(−1) ≈ 0.368","0.5","1 − e^(−1) ≈ 0.632","0.25"],
+    ans:0, exp:"P(X > 1/λ) = e^(−λ · 1/λ) = e^(−1) ≈ 0.368 for ANY value of λ." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"An industrial lamp has failure rate λ = 1/3 (per thousand hours). P(X > 3) = ?",
+    opts:["e^(−1) ≈ 0.368","e^(−3) ≈ 0.050","1 − e^(−1) ≈ 0.632","0.5"],
+    ans:0, exp:"P(X > 3) = 1 − F(3) = 1 − (1 − e^(−1/3·3)) = e^(−1) ≈ 0.368." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"The Exponential distribution is used to model:",
+    opts:["Interarrival times for random arrivals","Bounded variables on [0,1]","Sum of k normal variables","Symmetric phenomena"],
+    ans:0, exp:"The Exponential models random interarrival times and service times in queueing systems." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"For Exp(λ), what is always equal to the mean?",
+    opts:["Standard deviation","Variance","Mode","Median"],
+    ans:0, exp:"For Exp(λ): E(X) = 1/λ and SD(X) = √(1/λ²) = 1/λ. Mean = Standard Deviation." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"P(2 ≤ X ≤ 3) for Exp(λ=1/3) equals F(3) − F(2). What is this value?",
+    opts:["0.145","0.368","0.513","0.250"],
+    ans:0, exp:"F(3)−F(2) = (1−e^(−1)) − (1−e^(−2/3)) = −0.368 + 0.513 = 0.145." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"The memoryless property states:",
+    opts:["P(X > s+t | X > s) = P(X > t)","P(X > s+t) = P(X > s)·P(X > t)","P(X > t) = e^t","F(s+t) = F(s)+F(t)"],
+    ans:0, exp:"The conditional probability of surviving t more units, given survival to s, equals the unconditional probability of surviving t." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"In the Exponential distribution, λ represents:",
+    opts:["Rate (arrivals per hour or failures per unit time)","Mean lifetime","Standard deviation","Variance"],
+    ans:0, exp:"λ is the rate parameter — e.g., arrivals per hour, services per minute, or failure rate." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"On a graph of multiple Exponential PDFs, the y-intercept of each curve equals:",
+    opts:["λ","1/λ","1","0"],
+    ans:0, exp:"At x=0: f(0) = λe^0 = λ. The y-intercept always equals the rate parameter λ." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"The Exponential distribution CDF F(x) = 0 when:",
+    opts:["x < 0","x > 1/λ","x = 1","x > λ"],
+    ans:0, exp:"The Exponential is defined for x ≥ 0. For x < 0, F(x) = 0." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"If lamp lifetime is Exp(λ=1/3), what does λ=1/3 mean?",
+    opts:["Average 3000 hours (1 failure per 3000 hrs on average)","3 failures per hour","Failure at exactly 3000 hrs","33% chance of failure per hour"],
+    ans:0, exp:"λ = 1/3 (per thousand hours) means mean life = 1/λ = 3 thousand hours = 3000 hours." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"Which of the following is NOT a typical application of the Exponential distribution?",
+    opts:["Modeling heights of people in a population","Interarrival times in a Poisson process","Component failure times","Service times in a queue"],
+    ans:0, exp:"Heights of people follow a Normal distribution. The Exponential models random waiting/failure times." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"For Exp(λ), as λ increases, the distribution becomes:",
+    opts:["More concentrated near zero (shorter times)","More spread out","Symmetric","Uniform"],
+    ans:0, exp:"Higher λ = higher rate = shorter average time = PDF steeper at 0, dropping off faster." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"The proof of the memoryless property uses which equation?",
+    opts:["P(X>s+t|X>s) = e^(−λ(s+t))/e^(−λs) = e^(−λt)","P(X>t) = 1−F(t)","E(X) = 1/λ","V(X) = 1/λ²"],
+    ans:0, exp:"Using conditional probability: P(X>s+t|X>s) = e^(−λ(s+t))/e^(−λs) = e^(−λt) = P(X>t)." },
+
+  { topic:"Exponential", tc:"tc-expo",
+    q:"For Exp(λ=2), what is the mean?",
+    opts:["0.5","2","4","0.25"],
+    ans:0, exp:"E(X) = 1/λ = 1/2 = 0.5." },
+
+  // ── GAMMA DISTRIBUTION (Q34–Q44) ──
+  { topic:"Gamma", tc:"tc-gamma",
+    q:"The Gamma function Γ(β) is defined as:",
+    opts:["∫₀^∞ x^(β−1)e^(−x)dx","∫₀^∞ e^(−x)dx","β!","(β−1)/β"],
+    ans:0, exp:"Γ(β) = ∫₀^∞ x^(β−1)e^(−x)dx — a generalization of the factorial to all positive reals." },
+
+  { topic:"Gamma", tc:"tc-gamma",
+    q:"The recursion property of the Gamma function is:",
+    opts:["Γ(β) = (β−1)Γ(β−1)","Γ(β) = β·Γ(β)","Γ(β) = (β+1)!","Γ(β) = 1/β"],
+    ans:0, exp:"Γ(β) = (β−1)Γ(β−1), obtained by integration by parts." },
+
+  { topic:"Gamma", tc:"tc-gamma",
+    q:"When β is a positive integer, Γ(β) equals:",
+    opts:["(β−1)!","β!","β","1/β"],
+    ans:0, exp:"Γ(β) = (β−1)! for positive integers. For example, Γ(4) = 3! = 6." },
+
+  { topic:"Gamma", tc:"tc-gamma",
+    q:"The mean of the Gamma distribution Gamma(β, θ) is:",
+    opts:["1/θ","β/θ","θ/β","βθ"],
+    ans:0, exp:"E(X) = 1/θ. Note this is independent of β (shape parameter)." },
+
+  { topic:"Gamma", tc:"tc-gamma",
+    q:"The variance of Gamma(β, θ) is:",
+    opts:["1/(βθ²)","1/θ²","β/θ²","1/(βθ)"],
+    ans:0, exp:"V(X) = 1/(βθ²). Higher β (more phases) reduces variance, making the distribution more concentrated." },
+
+  { topic:"Gamma", tc:"tc-gamma",
+    q:"In the Gamma distribution, β is called the __ parameter and θ is called the __ parameter.",
+    opts:["shape; scale","scale; shape","rate; mean","mean; variance"],
+    ans:0, exp:"β is the shape parameter (controls the form of the distribution), θ is the scale parameter." },
+
+  { topic:"Gamma", tc:"tc-gamma",
+    q:"When β = 1, the Gamma distribution reduces to:",
+    opts:["Exponential distribution","Normal distribution","Uniform distribution","Beta distribution"],
+    ans:0, exp:"When β=1, the Gamma PDF f(x) = θe^(−θx) = Exponential with rate θ." },
+
+  { topic:"Gamma", tc:"tc-gamma",
+    q:"The Gamma function generalizes which mathematical concept?",
+    opts:["Factorial (n!)","Logarithm","Trigonometric functions","Polynomial roots"],
+    ans:0, exp:"Γ(n) = (n−1)! for positive integers. It extends factorial to all positive real numbers." },
+
+  { topic:"Gamma", tc:"tc-gamma",
+    q:"If X = X₁ + X₂ + ... + Xβ where each Xᵢ ~ Exp(βθ) independently, then X follows:",
+    opts:["Gamma(β, θ)","Exp(θ)","Normal(β, θ)","Uniform(0, β)"],
+    ans:0, exp:"The sum of β independent Exp(βθ) variables follows Gamma(β, θ). This is the building block of the Erlang distribution." },
+
+  { topic:"Gamma", tc:"tc-gamma",
+    q:"Γ(1) equals:",
+    opts:["1","0","∞","e"],
+    ans:0, exp:"Γ(1) = 0! = 1. This is used as the base case in the recursion Γ(β) = (β−1)Γ(β−1)." },
+
+  { topic:"Gamma", tc:"tc-gamma",
+    q:"For Gamma(β, θ), increasing β while keeping θ constant:",
+    opts:["Increases the mean and decreases variance relative to mean","Decreases the mean","Makes the distribution uniform","Has no effect"],
+    ans:0, exp:"E(X) = 1/θ stays the same but V(X) = 1/(βθ²) decreases as β increases, making the distribution more concentrated." },
+
+  // ── ERLANG DISTRIBUTION (Q45–Q54) ──
+  { topic:"Erlang", tc:"tc-erlang",
+    q:"The Erlang distribution is a special case of the Gamma distribution where:",
+    opts:["β = k is a positive integer","β can be any real number","θ = 1","λ = k"],
+    ans:0, exp:"Erlang(k, θ) is Gamma(β, θ) with β = k restricted to positive integers." },
+
+  { topic:"Erlang", tc:"tc-erlang",
+    q:"Erlang was a __ who developed this distribution for queueing theory.",
+    opts:["Danish telephone engineer","German mathematician","American statistician","French physicist"],
+    ans:0, exp:"A.K. Erlang was a Danish telephone engineer, an early pioneer of queueing theory." },
+
+  { topic:"Erlang", tc:"tc-erlang",
+    q:"In the Erlang context, k represents:",
+    opts:["Number of phases (service stations)","Number of customers","Arrival rate","Service rate"],
+    ans:0, exp:"k is the number of exponential phases or stages a customer must pass through." },
+
+  { topic:"Erlang", tc:"tc-erlang",
+    q:"The mode of the Erlang distribution is:",
+    opts:["(k−1)/(kθ)","k/(kθ)","1/(kθ)","(k+1)/(kθ)"],
+    ans:0, exp:"Mode = (k−1)/(kθ). For k=1 (Exponential), Mode = 0, which is correct." },
+
+  { topic:"Erlang", tc:"tc-erlang",
+    q:"For Erlang(k=3, θ=1/60), the expected value E(X) is:",
+    opts:["60 minutes","20 minutes","3 minutes","180 minutes"],
+    ans:0, exp:"E(X) = 1/θ = 1/(1/60) = 60 minutes." },
+
+  { topic:"Erlang", tc:"tc-erlang",
+    q:"In Example 5.19 (two light bulbs), the system lifetime uses Erlang with k=2 and kθ=1/1000. What is θ?",
+    opts:["1/2000","1/1000","2/1000","1/500"],
+    ans:0, exp:"kθ = 1/1000, so θ = 1/(k·1000) = 1/2000 per hour." },
+
+  { topic:"Erlang", tc:"tc-erlang",
+    q:"The CDF of Erlang(k, θ) when k is a positive integer involves:",
+    opts:["A sum of Poisson terms","A single exponential term","A normal approximation","A factorial integral"],
+    ans:0, exp:"F(x) = 1 − Σᵢ₌₀^(k−1) [e^(−kθx)(kθx)^i / i!], which is a sum of Poisson terms with mean α = kθx." },
+
+  { topic:"Erlang", tc:"tc-erlang",
+    q:"For the medical exam example (k=3 stages, mean 20 min each), what is the variance?",
+    opts:["1200 min²","60 min²","3600 min²","400 min²"],
+    ans:0, exp:"V(X) = 1/(βθ²) = 1/(3·(1/60)²) = 1/(3/3600) = 1200 min²." },
+
+  { topic:"Erlang", tc:"tc-erlang",
+    q:"For the medical exam (k=3, kθ=1/20, θ=1/60), the mode is:",
+    opts:["40 minutes","60 minutes","20 minutes","30 minutes"],
+    ans:0, exp:"Mode = (k−1)/(kθ) = (3−1)/(3·1/60) = 2/(1/20) = 40 minutes." },
+
+  { topic:"Erlang", tc:"tc-erlang",
+    q:"The expected value of the Erlang distribution E(X) = 1/θ is derived because:",
+    opts:["E(X) = E(X₁)+...+E(Xₖ) = k·(1/kθ) = 1/θ","E(X) = k/θ","E(X) = 1/(kθ)","E(X) = kθ"],
+    ans:0, exp:"Each of the k exponential stages has mean 1/(kθ), and the sum = k × 1/(kθ) = 1/θ." },
+
+  { topic:"Erlang", tc:"tc-erlang",
+    q:"The reliability function R(x) is defined as:",
+    opts:["R(x) = 1 − F(x)","R(x) = F(x)","R(x) = f(x)","R(x) = F(x)/f(x)"],
+    ans:0, exp:"R(x) = P(X > x) = 1 − F(x) — the probability the system is still operating at time x." },
+
+  // ── NORMAL DISTRIBUTION (Q55–Q66) ──
+  { topic:"Normal", tc:"tc-normal",
+    q:"A random variable X is normally distributed if its PDF is:",
+    opts:["(1/σ√2π)exp[−(x−μ)²/(2σ²)]","λe^(−λx)","1/(b−a)","(βθ/Γ(β))(βθx)^(β−1)e^(−βθx)"],
+    ans:0, exp:"The Normal PDF is the classic bell curve formula with mean μ and variance σ²." },
+
+  { topic:"Normal", tc:"tc-normal",
+    q:"The standard normal variable Z is defined as:",
+    opts:["Z = (X − μ)/σ","Z = (X + μ)/σ","Z = X·σ + μ","Z = (X − σ)/μ"],
+    ans:0, exp:"The Z-score standardizes X: Z = (X−μ)/σ, giving Z ~ N(0,1)." },
+
+  { topic:"Normal", tc:"tc-normal",
+    q:"The standard normal distribution has mean __ and variance __.",
+    opts:["0 and 1","1 and 0","μ and σ²","0 and σ"],
+    ans:0, exp:"Z ~ N(0,1): mean = 0, variance = 1, SD = 1." },
+
+  { topic:"Normal", tc:"tc-normal",
+    q:"Which property is true for the Normal distribution?",
+    opts:["The PDF is symmetric about μ","The PDF is skewed to the right","It has finite support","Mean ≠ Median"],
+    ans:0, exp:"f(μ−x) = f(μ+x) — the Normal PDF is perfectly symmetric about its mean μ." },
+
+  { topic:"Normal", tc:"tc-normal",
+    q:"For a Normal distribution, the mean, median, and mode are:",
+    opts:["All equal to μ","Always different","Mean > Median > Mode","Mode > Mean > Median"],
+    ans:0, exp:"Due to symmetry, all three measures of central tendency coincide at μ for the Normal distribution." },
+
+  { topic:"Normal", tc:"tc-normal",
+    q:"X ~ N(78, 25). What is P(X ≤ 69.75)?",
+    opts:["≈ 0.0495","≈ 0.9505","≈ 0.5","≈ 0.368"],
+    ans:0, exp:"Z = (69.75−78)/5 = −1.65. P(Z≤−1.65) = 1−Φ(1.65) = 1−0.9505 = 0.0495." },
+
+  { topic:"Normal", tc:"tc-normal",
+    q:"The notation X ~ N(μ, σ²) means:",
+    opts:["X is normally distributed with mean μ and variance σ²","X has mean μ and SD σ²","X is uniform on (μ, σ²)","X ~ Exp(σ²)"],
+    ans:0, exp:"Standard notation: N(μ, σ²) specifies the mean and variance of the Normal distribution." },
+
+  { topic:"Normal", tc:"tc-normal",
+    q:"The CDF of the standard normal is denoted:",
+    opts:["Φ(z)","φ(z)","F(z)","Z(x)"],
+    ans:0, exp:"Φ(z) is the standard notation for the CDF of Z ~ N(0,1)." },
+
+  { topic:"Normal", tc:"tc-normal",
+    q:"To find P(Z ≤ −1.65) using symmetry:",
+    opts:["1 − P(Z ≤ 1.65)","P(Z ≤ 1.65) − 0.5","P(Z ≥ 1.65) + 0.5","2·P(Z ≤ 1.65) − 1"],
+    ans:0, exp:"By symmetry: Φ(−z) = 1 − Φ(z). So P(Z ≤ −1.65) = 1 − Φ(1.65)." },
+
+  { topic:"Normal", tc:"tc-normal",
+    q:"X ~ N(78, 25). What kg value is exceeded by only 5% of students?",
+    opts:["86.225 kg","69.775 kg","83 kg","78 kg"],
+    ans:0, exp:"P(X>a)=0.05 ⟹ P(Z≤z)=0.95 ⟹ z=1.645. Then a = 78 + 1.645×5 = 86.225 kg." },
+
+  { topic:"Normal", tc:"tc-normal",
+    q:"The Normal PDF f(x) → ___ as x → ±∞.",
+    opts:["0","∞","1","μ"],
+    ans:0, exp:"lim f(x) = 0 as x → ±∞. The tails of the Normal distribution approach zero asymptotically." },
+
+  { topic:"Normal", tc:"tc-normal",
+    q:"The maximum value of the Normal PDF occurs at:",
+    opts:["x = μ","x = μ + σ","x = μ − σ","x = 0"],
+    ans:0, exp:"The PDF peaks at x = μ (the mean), where the bell curve reaches its maximum height." },
+
+  // ── WEIBULL DISTRIBUTION (Q67–Q76) ──
+  { topic:"Weibull", tc:"tc-weibull",
+    q:"The three parameters of the Weibull distribution are:",
+    opts:["Location ν, scale α, shape β","Mean μ, variance σ², rate λ","Shape k, rate θ, mode m","Lower a, upper b, mode c"],
+    ans:0, exp:"Weibull has ν (location), α (scale, α>0), and β (shape, β>0) parameters." },
+
+  { topic:"Weibull", tc:"tc-weibull",
+    q:"When β = 1 and ν = 0, the Weibull distribution reduces to:",
+    opts:["Exponential with λ = 1/α","Normal distribution","Gamma distribution","Uniform distribution"],
+    ans:0, exp:"With β=1, ν=0: f(x) = (1/α)e^(−x/α), which is Exp(λ=1/α)." },
+
+  { topic:"Weibull", tc:"tc-weibull",
+    q:"The Weibull CDF is:",
+    opts:["F(x) = 1 − exp[−((x−ν)/α)^β] for x ≥ ν","F(x) = 1 − e^(−λx)","F(x) = (x−a)/(b−a)","F(x) = Φ((x−μ)/σ)"],
+    ans:0, exp:"The Weibull CDF is F(x) = 1 − exp[−((x−ν)/α)^β] for x ≥ ν." },
+
+  { topic:"Weibull", tc:"tc-weibull",
+    q:"The mean of the Weibull distribution is:",
+    opts:["E(X) = ν + αΓ(1/β + 1)","E(X) = α/β","E(X) = αβ","E(X) = ν + α/β"],
+    ans:0, exp:"E(X) = ν + αΓ(1/β + 1). The location ν shifts the mean but not the variance." },
+
+  { topic:"Weibull", tc:"tc-weibull",
+    q:"In Example 5.25, a component has ν=0, β=1/3, α=200. What is the mean time to failure?",
+    opts:["1200 hours","200 hours","600 hours","400 hours"],
+    ans:0, exp:"E(X) = 200·Γ(3+1) = 200·3! = 200·6 = 1200 hours." },
+
+  { topic:"Weibull", tc:"tc-weibull",
+    q:"In Example 5.25, what is P(fail before 2000 hours)?",
+    opts:["0.884","0.116","0.500","0.368"],
+    ans:0, exp:"F(2000) = 1−exp[−(2000/200)^(1/3)] = 1−e^(−10^(1/3)) = 1−e^(−2.154) ≈ 0.884." },
+
+  { topic:"Weibull", tc:"tc-weibull",
+    q:"For Weibull, a shape parameter β > 1 indicates:",
+    opts:["Increasing failure rate (wear-out)","Constant failure rate","Decreasing failure rate","Random failures"],
+    ans:0, exp:"β>1: increasing failure rate (aging/wear-out). β<1: decreasing (infant mortality). β=1: constant (random)." },
+
+  { topic:"Weibull", tc:"tc-weibull",
+    q:"The location parameter ν in the Weibull distribution:",
+    opts:["Shifts the mean but does not affect variance","Affects only the variance","Determines the shape","Has no effect on the distribution"],
+    ans:0, exp:"ν shifts the entire distribution (including the mean) but V(X) formula does not contain ν." },
+
+  { topic:"Weibull", tc:"tc-weibull",
+    q:"In Example 5.26, runway clearance time has ν=1.34, β=0.5, α=0.04. P(X > 1.5) = ?",
+    opts:["0.135","0.865","0.5","0.368"],
+    ans:0, exp:"P(X>1.5) = 1−F(1.5) = exp[−((1.5−1.34)/0.04)^0.5] = e^(−2) ≈ 0.135." },
+
+  { topic:"Weibull", tc:"tc-weibull",
+    q:"The Weibull distribution is most widely used in:",
+    opts:["Reliability engineering and failure analysis","Financial modeling","Daily temperature forecasting","Student score analysis"],
+    ans:0, exp:"The Weibull's flexible shape parameter makes it ideal for modeling component failure times and lifetimes." },
+
+  // ── TRIANGULAR DISTRIBUTION (Q77–Q84) ──
+  { topic:"Triangular", tc:"tc-tri",
+    q:"The Triangular distribution has parameters:",
+    opts:["a (minimum), b (mode), c (maximum)","mean μ, variance σ²","rate λ, shape β","lower α, upper β"],
+    ans:0, exp:"Triangular(a, b, c) where a ≤ b ≤ c. The mode occurs at x = b." },
+
+  { topic:"Triangular", tc:"tc-tri",
+    q:"The mean of the Triangular distribution is:",
+    opts:["(a + b + c)/3","(a + c)/2","b","(2b + a + c)/4"],
+    ans:0, exp:"E(X) = (a+b+c)/3 — the simple average of the three parameters." },
+
+  { topic:"Triangular", tc:"tc-tri",
+    q:"Given a=0, c=10, E(X)=4, what is the mode b?",
+    opts:["2","4","5","3"],
+    ans:0, exp:"b = 3E(X) − (a+c) = 3(4) − (0+10) = 12 − 10 = 2." },
+
+  { topic:"Triangular", tc:"tc-tri",
+    q:"The Triangular distribution is often used when:",
+    opts:["Exact distribution data is unavailable but min, max, and mode are known","Data perfectly fits a bell curve","Arrivals are completely random","Variables are bounded on [0,1]"],
+    ans:0, exp:"The Triangular is a practical choice in simulation when only expert estimates of min, max, and most-likely are available." },
+
+  { topic:"Triangular", tc:"tc-tri",
+    q:"In Example 5.27, CPU requirements have a=0.05, b=1.1, c=6.5ms. F(2.5) = ?",
+    opts:["0.541","0.459","0.75","0.25"],
+    ans:0, exp:"F(2.5) = 1 − (6.5−2.5)²/[(6.5−0.05)(6.5−1.1)] = 1 − 16/(6.45×5.4) ≈ 0.541." },
+
+  { topic:"Triangular", tc:"tc-tri",
+    q:"The height of the Triangular PDF at its peak (mode b) is:",
+    opts:["2/(c−a)","1/(c−a)","(c−a)/2","1/(b−a)"],
+    ans:0, exp:"The peak height = 2/(c−a), ensuring the total area of the triangle = 1." },
+
+  { topic:"Triangular", tc:"tc-tri",
+    q:"In Example 5.28 (memory chip rejects), the median is:",
+    opts:["3.7","4","2","5"],
+    ans:0, exp:"Setting F(x)=0.5 in the right-side CDF formula with b=2, c=10 gives x = 3.7." },
+
+  { topic:"Triangular", tc:"tc-tri",
+    q:"For the Triangular distribution, which relationship is always true?",
+    opts:["Mean ≠ Median ≠ Mode in general","Mean = Median = Mode","Mean > Mode always","Mode > Mean always"],
+    ans:0, exp:"Unlike the Normal, the Triangular distribution generally has Mean ≠ Median ≠ Mode (as shown in Figure 5.21)." },
+
+  // ── LOGNORMAL DISTRIBUTION (Q85–Q92) ──
+  { topic:"Lognormal", tc:"tc-lognorm",
+    q:"X has a Lognormal distribution if:",
+    opts:["ln(X) is normally distributed","X is normally distributed","X = e^μ","X ~ Exp(μ)"],
+    ans:0, exp:"If ln(X) ~ N(μ, σ²), then X has a lognormal distribution." },
+
+  { topic:"Lognormal", tc:"tc-lognorm",
+    q:"The mean of a Lognormal distribution is:",
+    opts:["e^(μ + σ²/2)","e^μ","μ + σ²/2","e^(2μ + σ²)"],
+    ans:0, exp:"E(X) = e^(μ+σ²/2). The parameters μ and σ² are from the underlying normal distribution of ln(X)." },
+
+  { topic:"Lognormal", tc:"tc-lognorm",
+    q:"The variance of a Lognormal distribution is:",
+    opts:["e^(2μ+σ²)(e^(σ²)−1)","e^(σ²)−1","σ²","e^(2μ+σ²)"],
+    ans:0, exp:"V(X) = e^(2μ+σ²)(e^(σ²)−1). Both mean and variance depend on both μ and σ²." },
+
+  { topic:"Lognormal", tc:"tc-lognorm",
+    q:"Given μ_L=20 and σ²_L=25, compute μ for the lognormal:",
+    opts:["≈ 2.9654","≈ 0.06","≈ 20","≈ 3.0"],
+    ans:0, exp:"μ = ln(20²/√(20²+25)) = ln(400/√425) ≈ ln(19.41) ≈ 2.9654." },
+
+  { topic:"Lognormal", tc:"tc-lognorm",
+    q:"Given μ_L=20 and σ²_L=25, compute σ² for the lognormal:",
+    opts:["≈ 0.06","≈ 2.9654","≈ 25","≈ 400"],
+    ans:0, exp:"σ² = ln((μ²_L + σ²_L)/μ²_L) = ln(425/400) = ln(1.0625) ≈ 0.06." },
+
+  { topic:"Lognormal", tc:"tc-lognorm",
+    q:"The Lognormal distribution is used to model:",
+    opts:["Investment returns, repair times, particle sizes","Symmetric bell-shaped data","Bounded data on [0,1]","Interarrival times in queues"],
+    ans:0, exp:"Lognormal is appropriate for quantities that are products of many independent factors (multiplicative processes)." },
+
+  { topic:"Lognormal", tc:"tc-lognorm",
+    q:"If Y ~ N(μ, σ²) and X = e^Y, then X follows:",
+    opts:["Lognormal distribution","Normal distribution","Exponential distribution","Gamma distribution"],
+    ans:0, exp:"If Y is normal, then X = e^Y is lognormal. Equivalently, ln(X) = Y is normal." },
+
+  { topic:"Lognormal", tc:"tc-lognorm",
+    q:"The parameters μ and σ² in the Lognormal distribution are:",
+    opts:["Mean and variance of ln(X)","Mean and variance of X directly","The shape and scale parameters","Location and rate parameters"],
+    ans:0, exp:"μ = E[ln(X)] and σ² = Var[ln(X)]. They are NOT the mean and variance of X itself." },
+
+  // ── BETA DISTRIBUTION (Q93–Q100) ──
+  { topic:"Beta", tc:"tc-beta",
+    q:"The Beta distribution has a finite range of:",
+    opts:["(0, 1)","(0, ∞)","(−∞, ∞)","(a, b) with a > 0"],
+    ans:0, exp:"The standard Beta distribution is defined on (0,1). It can be generalized to any (a,b) with a<b." },
+
+  { topic:"Beta", tc:"tc-beta",
+    q:"The PDF of the Beta distribution with parameters β₁ and β₂ is:",
+    opts:["x^(β₁−1)(1−x)^(β₂−1)/B(β₁,β₂) for 0<x<1","λe^(−λx)","1/(b−a)","Γ(β₁+β₂)/(Γ(β₁)Γ(β₂))"],
+    ans:0, exp:"f(x) = x^(β₁−1)(1−x)^(β₂−1)/B(β₁,β₂) where B(β₁,β₂) = Γ(β₁)Γ(β₂)/Γ(β₁+β₂)." },
+
+  { topic:"Beta", tc:"tc-beta",
+    q:"The normalizing constant B(β₁, β₂) of the Beta distribution equals:",
+    opts:["Γ(β₁)Γ(β₂)/Γ(β₁+β₂)","Γ(β₁+β₂)","β₁!β₂!","1/(β₁+β₂)"],
+    ans:0, exp:"B(β₁,β₂) = Γ(β₁)Γ(β₂)/Γ(β₁+β₂) is the Beta function." },
+
+  { topic:"Beta", tc:"tc-beta",
+    q:"The mean of Beta(β₁, β₂) on (0,1) is:",
+    opts:["β₁/(β₁+β₂)","β₂/(β₁+β₂)","(β₁+β₂)/2","1/(β₁+β₂)"],
+    ans:0, exp:"E(X) = β₁/(β₁+β₂). When β₁=β₂, E(X)=0.5 (symmetric about 0.5)." },
+
+  { topic:"Beta", tc:"tc-beta",
+    q:"Why is the Beta distribution called 'very flexible'?",
+    opts:["β₁ and β₂ can produce many shapes: U-shaped, J-shaped, bell-shaped, uniform","It is always symmetric","It has infinite range","It always has the same variance"],
+    ans:0, exp:"By varying β₁ and β₂, the Beta can take on dramatically different shapes, making it useful for modeling proportions and probabilities." },
+
+  { topic:"Beta", tc:"tc-beta",
+    q:"To define a Beta distribution on range (a, b) instead of (0,1), we use:",
+    opts:["Y = a + (b−a)X where X ~ Beta(β₁,β₂)","Y = X/(b−a)","Y = X + a","Y = X·(b−a)/a"],
+    ans:0, exp:"Transformation Y = a + (b−a)X maps Beta(0,1) to the interval (a,b)." },
+
+  { topic:"Beta", tc:"tc-beta",
+    q:"The CDF of the Beta distribution:",
+    opts:["Does not have a closed form in general","Is always e^(−x)","Is always (x−a)/(b−a)","Is the same as the Normal CDF"],
+    ans:0, exp:"The Beta CDF requires numerical methods or special tables in general — there is no simple closed-form expression." },
+
+  { topic:"Beta", tc:"tc-beta",
+    q:"A typical application of the Beta distribution is:",
+    opts:["Modeling proportions, probabilities, and bounded uncertainties","Modeling interarrival times","Modeling heights of people","Modeling component failure rates"],
+    ans:0, exp:"The Beta's support [0,1] and flexible shape make it natural for proportions, completion rates, and Bayesian probability estimates." },
+
+  { topic:"Beta", tc:"tc-beta",
+    q:"The variance of Y = a + (b−a)X where X ~ Beta(β₁,β₂) is:",
+    opts:["(b−a)² · β₁β₂/[(β₁+β₂)²(β₁+β₂+1)]","(b−a)²/12","β₁/(β₁+β₂)²","(b−a)·β₁β₂"],
+    ans:0, exp:"V(Y) = (b−a)²·β₁β₂/[(β₁+β₂)²(β₁+β₂+1)], as given in Equations 5.61-5.62." }
+];
+
+let current = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+let score = 0;
+
+function startQuiz() {
+  showScreen('screen-quiz');
+  renderQuestion(0);
+  updateNav();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function renderQuestion(idx) {
+  const q = QUESTIONS[idx];
+  const answered = answers[idx] !== null;
+  const container = document.getElementById('quiz-container');
+
+  // Update progress
+  const answered_count = answers.filter(a => a !== null).length;
+  document.getElementById('prog-label').textContent = `Question ${idx+1} of ${QUESTIONS.length}`;
+  document.getElementById('prog-frac').textContent = `${answered_count} / ${QUESTIONS.length}`;
+  document.getElementById('prog-fill').style.width = ((idx+1)/QUESTIONS.length*100)+'%';
+  document.getElementById('nav-score').textContent = score + ' pts';
+
+  const cardClass = answered
+    ? (answers[idx] === q.ans ? 'answered-correct' : 'answered-wrong')
+    : '';
+
+  container.innerHTML = `
+    <div class="q-card ${cardClass}">
+      <div class="q-header">
+        <div class="q-num">${String(idx+1).padStart(2,'0')}</div>
+        <span class="q-topic-badge ${q.tc}">${q.topic}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">
+        ${q.opts.map((opt, i) => {
+          let cls = '';
+          if (answered) {
+            if (i === q.ans) cls = 'correct';
+            else if (i === answers[idx] && answers[idx] !== q.ans) cls = 'wrong';
+          }
+          const keys = ['A','B','C','D'];
+          return `<button class="opt-btn ${cls}" ${answered?'disabled':''} onclick="selectAnswer(${i})">
+            <span class="opt-key">${keys[i]}</span>${opt}
+          </button>`;
+        }).join('')}
+      </div>
+      <div class="explanation ${answered ? (answers[idx]===q.ans?'correct':'wrong') : ''} ${answered?'show':''}">
+        ${answered ? (answers[idx]===q.ans ? '✓ Correct! ' : '✗ Incorrect. ') + q.exp : ''}
+      </div>
+    </div>
+  `;
+
+  // Show/hide finish button
+  const allDone = answers.filter(a=>a!==null).length === QUESTIONS.length;
+  document.getElementById('btn-finish').style.display = allDone ? 'block' : 'none';
+  document.getElementById('btn-prev').disabled = idx === 0;
+  document.getElementById('btn-next').disabled = idx === QUESTIONS.length-1;
+}
+
+function selectAnswer(choice) {
+  if (answers[current] !== null) return;
+  answers[current] = choice;
+  if (choice === QUESTIONS[current].ans) score++;
+  document.getElementById('nav-score').textContent = score + ' pts';
+  renderQuestion(current);
+
+  // Auto-advance after 1.2s
+  setTimeout(() => {
+    if (current < QUESTIONS.length - 1) {
+      current++;
+      renderQuestion(current);
+      updateNav();
+    } else {
+      document.getElementById('btn-finish').style.display = 'block';
+    }
+  }, 1200);
+}
+
+function navigate(dir) {
+  current = Math.max(0, Math.min(QUESTIONS.length-1, current+dir));
+  renderQuestion(current);
+  updateNav();
+}
+
+function updateNav() {
+  document.getElementById('btn-prev').disabled = current === 0;
+  document.getElementById('btn-next').disabled = current === QUESTIONS.length-1;
+}
+
+function showResults() {
+  const correct = answers.filter((a,i) => a === QUESTIONS[i].ans).length;
+  const wrong = answers.filter((a,i) => a !== null && a !== QUESTIONS[i].ans).length;
+  const skip = answers.filter(a => a === null).length;
+  const pct = Math.round(correct/QUESTIONS.length*100);
+
+  document.getElementById('score-big').textContent = correct;
+  document.getElementById('res-correct').textContent = correct;
+  document.getElementById('res-wrong').textContent = wrong;
+  document.getElementById('res-skip').textContent = skip;
+
+  let grade, msg, color;
+  if(pct >= 90) { grade='A+'; msg='Outstanding! You have mastered continuous distributions.'; color='var(--green)'; }
+  else if(pct >= 80) { grade='A'; msg='Excellent! Strong understanding of all topics.'; color='var(--green)'; }
+  else if(pct >= 70) { grade='B'; msg='Good work! Review a few weak areas.'; color='var(--cyan)'; }
+  else if(pct >= 60) { grade='C'; msg='Average. Revisit the lecture notes carefully.'; color='var(--amber)'; }
+  else if(pct >= 50) { grade='D'; msg='Below average. Focus on fundamentals.'; color='var(--amber)'; }
+  else { grade='F'; msg='Needs improvement. Re-read the entire lecture.'; color='var(--red)'; }
+
+  document.getElementById('grade-letter').textContent = grade;
+  document.getElementById('grade-letter').style.color = color;
+  document.getElementById('grade-msg').textContent = msg;
+  document.getElementById('score-ring').style.borderColor = color;
+  document.getElementById('score-big').style.color = color;
+  document.getElementById('res-sub').textContent = `// You scored ${pct}% — ${correct} out of ${QUESTIONS.length} correct`;
+
+  const banner = document.getElementById('grade-banner');
+  banner.style.background = color.replace(')', ',0.08)').replace('var(', 'rgba(').replace('--green','34,211,160').replace('--cyan','0,229,255').replace('--amber','251,191,36').replace('--red','244,63,94');
+  banner.style.border = `1px solid ${color.replace(')', ',0.3)').replace('var(', 'rgba(').replace('--green','34,211,160').replace('--cyan','0,229,255').replace('--amber','251,191,36').replace('--red','244,63,94')}`;
+
+  showScreen('screen-results');
+}
+
+function retryQuiz() {
+  answers = new Array(QUESTIONS.length).fill(null);
+  score = 0;
+  current = 0;
+  showScreen('screen-quiz');
+  renderQuestion(0);
+  updateNav();
+  document.getElementById('btn-finish').style.display = 'none';
+}
+
+function reviewQuiz() {
+  current = 0;
+  showScreen('screen-quiz');
+  renderQuestion(0);
+  updateNav();
+}
+</script>
+</body>
+</html>
